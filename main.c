@@ -22,6 +22,14 @@ void EXTI3_IRQHandler(void);
 
 volatile bool flagA = false;
 volatile bool flagB = false;
+volatile bool A = false;
+volatile bool B = false;
+volatile long long ref = 0;
+volatile long pulses = 0;
+volatile long velocity=0;
+volatile int encoding=0;
+volatile int prev = 0;
+volatile int curr = 0;
 
 /*********************************************************************
 *
@@ -32,12 +40,8 @@ volatile bool flagB = false;
 */
 
 int main(void) {
-  long long ref = 0;
-  long pulses = 0;
-  long velocity=0;
-  int encoding=0;
 
-
+  
   //config gpio
   gpioEnable(GPIO_PORT_A);
   pinMode(ENCODER_A, GPIO_INPUT);
@@ -52,8 +56,6 @@ int main(void) {
   //config interrupts for gpio
   gpio_interrupt();
 
-  int prev=0;
-  int curr=0;
 
   while(1){
     delay_millis(REPORT_TIM, 1000);
@@ -63,23 +65,36 @@ int main(void) {
           while(!(UPDATE_TIM->SR & 1)){// Wait for UIF to go high
 
             if(flagA|flagB){
-              printf("flagged");
-             // if B = ~A -> CW, if  B == A -> CCW, 
-              curr = ((flagA<<1) | flagB);
-              encoding = case_prev_curr(curr, prev);
+             // if B = ~A -> CW, if  B == A -> CCW,
+              flagA=0;
+              flagB=0;
 
+              A = digitalRead(2);
+              B = digitalRead(3);
+              curr = ((A<<1) | B);
+              A=0;
+              B=0;
+             // printf("curr = %d \n", curr);
+             // printf("prev = %d \n", prev);
+              encoding = case_prev_curr(curr, prev);
               prev = curr;
-              curr = 0;
+              
+           //   curr = 0
               // need ppr conversion
               pulses += encoding;
 
-              //PPR = 120
-              velocity = pulses/(10*120);
+              //PPR = 408
+              velocity = (pulses*10)/(4*408);
             }
 
           }
           UPDATE_TIM->SR &= ~(0x1); // Clear UIF flag
-          printf("velocity = %d", velocity); 
+          printf("%d \n", velocity);
+         // printf("velocity = %d \n", velocity); 
+         // printf("pulses = %d \n", pulses);
+          pulses = 0;
+          velocity = 0;
+
 
         }
         REPORT_TIM->SR &= ~(0x1); // Clear UIF flag
