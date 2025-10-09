@@ -1,7 +1,7 @@
-// main.h
-// Josh Brake
-// jbrake@hmc.edu
-// 10/31/22 
+// Isabella Hottenrott
+// ihottenrott@g.hmc.edu
+// main.h for Lab5_ih
+// 9/10/2025
 
 #ifndef MAIN_H
 #define MAIN_H

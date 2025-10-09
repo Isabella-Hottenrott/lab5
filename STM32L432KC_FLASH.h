@@ -1,3 +1,6 @@
+// Isabella Hottenrott
+// ihottenrott@g.hmc.edu
+// 9/10/2025
 // STM32L432KC_FLASH.h
 // Header for FLASH functions
 

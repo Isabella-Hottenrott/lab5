@@ -1,3 +1,6 @@
+// Isabella Hottenrott
+// ihottenrott@g.hmc.edu
+// 9/10/2025
 // STM32F401RE_RCC.c
 // Source code for RCC functions
 

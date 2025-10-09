@@ -1,14 +1,7 @@
-/*********************************************************************
-*                    SEGGER Microcontroller GmbH                     *
-*                        The Embedded Experts                        *
-**********************************************************************
-
--------------------------- END-OF-HEADER -----------------------------
-
-File    : main.c
-Purpose : Generic application start
-
-*/
+// Isabella Hottenrott
+// ihottenrott@g.hmc.edu
+// main.c for Lab5_ih
+// 9/10/2025
 
 #include <stdio.h>
 #include "main.h"
@@ -31,13 +24,8 @@ volatile int encoding=0;
 volatile int prev = 0;
 volatile int curr = 0;
 
-/*********************************************************************
-*
-*       main()
-*
-*  Function description
-*   Application entry point.
-*/
+
+/// Main.c Begin
 
 int main(void) {
 
@@ -53,8 +41,8 @@ int main(void) {
   RCC->APB2ENR |= RCC_APB2ENR_TIM15EN;
   initTIM(REPORT_TIM);
 
-  //config interrupts for gpio
-  gpio_interrupt();
+  
+  gpio_interrupt(); //config interrupts for gpio
 
 
   while(1){
@@ -65,35 +53,29 @@ int main(void) {
           while(!(UPDATE_TIM->SR & 1)){// Wait for UIF to go high
 
             if(flagA|flagB){
-             // if B = ~A -> CW, if  B == A -> CCW,
-              flagA=0;
+              flagA=0; // Reset the flags
               flagB=0;
 
-              A = digitalRead(2);
+              A = digitalRead(2);  // Read both pins
               B = digitalRead(3);
-              curr = ((A<<1) | B);
-              A=0;
+              curr = ((A<<1) | B); // Create encoding
+              A=0; // Reset the variables
               B=0;
-             // printf("curr = %d \n", curr);
-             // printf("prev = %d \n", prev);
+
               encoding = case_prev_curr(curr, prev);
               prev = curr;
-              
-           //   curr = 0
-              // need ppr conversion
-              pulses += encoding;
+              pulses += encoding; // Add the necessary encoding
 
-              //PPR = 408
-              velocity = (pulses*10)/(4*408);
+              
+              velocity = (pulses*10)/(4*408); //PPR = 408, 4 edges detected, 10 samples per second
             }
 
           }
           UPDATE_TIM->SR &= ~(0x1); // Clear UIF flag
           printf("%.4f \n", velocity);
-         // printf("velocity = %d \n", velocity); 
-         // printf("pulses = %d \n", pulses);
-          pulses = 0;
-          velocity = 0;
+
+          pulses = 0; // Clear the velocity and pulses 
+          velocity = 0; // For the next reading
 
 
         }
@@ -106,7 +88,7 @@ int main(void) {
 
 int case_prev_curr(int curr, int prev){
   switch(curr) {
-        case 0:
+        case 0: //Encoding based on the CL produced from Reference Manual
                   switch(prev) {
                             case 0:
                                 return 0;
@@ -121,8 +103,8 @@ int case_prev_curr(int curr, int prev){
                                 return 0;
                                 break;
                             default:
-                                printf("error1");
-                                break;
+                                printf("error1"); // For Debug
+                                break; // Print error when no encoding exists
                   }
                   break;
         case 1:
@@ -190,7 +172,6 @@ int case_prev_curr(int curr, int prev){
 
 void gpio_interrupt(void) {
 
-
     // 1. Enable SYSCFG clock domain in RCC
     RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
     // 2. Configure EXTICR for the Encoder A interrupt
@@ -200,17 +181,15 @@ void gpio_interrupt(void) {
     // Enable interrupts globally
     __enable_irq();
 
-
         // 1. Configure mask bit
     EXTI->IMR1 |= (1 << gpioPinOffset(ENCODER_A)); // Configure the mask bit
     EXTI->IMR1 |= (1 << gpioPinOffset(ENCODER_B)); // Configure the mask bit
-    // 2. Enable rising edge trigger
+    // 2. Enable rising edge triggers
     EXTI->RTSR1 |= (1 << gpioPinOffset(ENCODER_A));// Enable rising edge trigger
     EXTI->RTSR1 |= (1 << gpioPinOffset(ENCODER_B));// Enable rising edge trigger
-    // 3. Enable falling edge trigger
+    // 3. Enable falling edge triggers
     EXTI->FTSR1 |= (1 << gpioPinOffset(ENCODER_A));// Enable falling edge trigger
     EXTI->FTSR1 |= (1 << gpioPinOffset(ENCODER_B));// Enable falling edge trigger
- 
  
     // 4. Turn on EXTI interrupt in NVIC_ISER
     NVIC->ISER[0] |= (1 << EXTI2_IRQn);
@@ -226,10 +205,6 @@ void EXTI2_IRQHandler(void){
         // If so, clear the interrupt (NB: Write 1 to reset.)
         EXTI->PR1 |= (1 << ENCODER_A);
         flagA = true;
-
-        
-        // Read the two bits of both GPIO pins
-        // Add to fn
     }
 }
 
@@ -239,15 +214,8 @@ void EXTI3_IRQHandler(void){
         // If so, clear the interrupt (NB: Write 1 to reset.)
         EXTI->PR1 |= (1 << ENCODER_B);
         flagB = true;
-
-        // Read the two bits of both GPIO pins
-        // Add to fn
-
     }
 
 }
 
 
-
-
-/*************************** End of file ****************************/
