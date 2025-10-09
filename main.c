@@ -53,6 +53,9 @@ int main(void) {
           while(!(UPDATE_TIM->SR & 1)){// Wait for UIF to go high
 
             if(flagA|flagB){
+         //     printf("A= %d\n", flagA);
+           //   printf("B= %d\n", flagB);
+
               flagA=0; // Reset the flags
               flagB=0;
 
