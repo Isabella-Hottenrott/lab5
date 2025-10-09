@@ -25,8 +25,8 @@ volatile bool flagB = false;
 volatile bool A = false;
 volatile bool B = false;
 volatile long long ref = 0;
-volatile long pulses = 0;
-volatile long velocity=0;
+volatile double pulses = 0;
+volatile double velocity=0;
 volatile int encoding=0;
 volatile int prev = 0;
 volatile int curr = 0;
@@ -89,7 +89,7 @@ int main(void) {
 
           }
           UPDATE_TIM->SR &= ~(0x1); // Clear UIF flag
-          printf("%d \n", velocity);
+          printf("%.4f \n", velocity);
          // printf("velocity = %d \n", velocity); 
          // printf("pulses = %d \n", pulses);
           pulses = 0;
