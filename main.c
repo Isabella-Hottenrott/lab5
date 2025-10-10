@@ -59,8 +59,8 @@ int main(void) {
               flagA=0; // Reset the flags
               flagB=0;
 
-              A = digitalRead(2);  // Read both pins
-              B = digitalRead(3);
+              A = ((GPIOA->IDR) >> 2) & 1;
+              B = ((GPIOA->IDR) >> 3) & 1;
               curr = ((A<<1) | B); // Create encoding
               A=0; // Reset the variables
               B=0;
@@ -202,23 +202,27 @@ void gpio_interrupt(void) {
 }
 
 
+// Check that Encoder_A, PA2, was what triggered our interrupt
+// If so, clear the interrupt (NB: Write 1 to reset.)
+// Set flagA to true if interrupt occurs
 void EXTI2_IRQHandler(void){
-    // Check that Encoder A was what triggered our interrupt
     if (EXTI->PR1 & (1 << ENCODER_A)){
-        // If so, clear the interrupt (NB: Write 1 to reset.)
         EXTI->PR1 |= (1 << ENCODER_A);
         flagA = true;
     }
 }
 
+
+// Check that Encoder_B, PA3, was what triggered our interrupt
+// If so, clear the interrupt (NB: Write 1 to reset.)
+// Set flabB to true if interrupt occurs
 void EXTI3_IRQHandler(void){
-    // Check that Encoder B was what triggered our interrupt
     if (EXTI->PR1 & (1 << ENCODER_B)){
-        // If so, clear the interrupt (NB: Write 1 to reset.)
         EXTI->PR1 |= (1 << ENCODER_B);
         flagB = true;
+
+
     }
 
 }
-
 
