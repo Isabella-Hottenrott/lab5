@@ -2,7 +2,7 @@
 // ihottenrott@g.hmc.edu
 // 9/10/2025
 // STM32L432KC_USART.c
-// Source code for USART functions
+// Code for USART functions
 
 #include "STM32L432KC.h"
 #include "STM32L432KC_USART.h"

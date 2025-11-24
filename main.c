@@ -11,7 +11,8 @@ int case_prev_curr(int prev, int curr);
 void gpio_interrupt(void);
 void EXTI2_IRQHandler(void);
 void EXTI3_IRQHandler(void);
-///
+
+///////////////
 
 volatile bool flagA = false;
 volatile bool flagB = false;
@@ -52,17 +53,15 @@ int main(void) {
         delay_millis(UPDATE_TIM, 100);
           while(!(UPDATE_TIM->SR & 1)){// Wait for UIF to go high
 
-            if(flagA|flagB){
-         //     printf("A= %d\n", flagA);
-           //   printf("B= %d\n", flagB);
+            if(flagA|flagB){ // if either interrupt flags went up
 
               flagA=0; // Reset the flags
               flagB=0;
 
-              A = ((GPIOA->IDR) >> 2) & 1;
+              A = ((GPIOA->IDR) >> 2) & 1; //Record which flag was high
               B = ((GPIOA->IDR) >> 3) & 1;
               curr = ((A<<1) | B); // Create encoding
-              A=0; // Reset the variables
+              A=0;                 // Reset the variables
               B=0;
 
               encoding = case_prev_curr(curr, prev);
